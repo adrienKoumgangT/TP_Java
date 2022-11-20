@@ -119,5 +119,53 @@ public class Utils {
 
       return texte != null ? texte.toString() : null;
    }
-     
+
+
+   /**
+    * Cette methode retourne une nouvelle chaine de caracteres qui represente
+    * le texte donne en parametre, auquel on a enleve tous les caracteres
+    * blancs au debut de chaque ligne, et tous les caracteres blancs superflus
+    * a la fin de chaque ligne (en conservant cependant le caractere '\n' qui
+    * marque la fin d'une ligne).
+    *
+    * @param texte le texte a traiter.
+    * @return une nouvelle chaine representant le texte donne en parametre,
+    * auquel on a enleve tous les caracteres blancs au debut et a la fin
+    * de chaque ligne (en conservant le caractere '\n' a la fin de chaque
+    * ligne).
+    */
+   public static String trimer (String texte) {
+      StringBuilder sTrim = new StringBuilder(); //texte a retourner
+      String sTmp;
+      int debut = 0; //indice du debut de la ligne courante
+      int fin; //indice de la fin de la ligne courante
+      //parcourir les lignes, et enlever les caracteres blancs avant et après
+      //chaque ligne sauf le \n a la fin de la ligne.
+      texte = texte.trim() + "\n";
+      fin = texte.indexOf("\n", debut);
+      while (fin != -1) {
+         //extraire la ligne courante et enlever tous les caracteres blancs
+         //en debut et fin de ligne
+         sTmp = texte.substring(debut, fin).trim();
+         //concatener la ligne courante a la chaine a retourner, en ajoutant
+         //le saut de ligne a la fin.
+         sTrim.append(sTmp).append("\n");
+         //ajuster le debut de la ligne courante suivante
+         debut = fin + 1;
+         //trouver la fin de la ligne courante suivante
+         fin = texte.indexOf("\n", debut);
+      }
+      return sTrim.toString();
+   }
+
+
+   public static String repeatString(String text, long n) {
+      if (text == null) return null;
+      if (n <= 1) return text;
+      StringBuilder result = new StringBuilder();
+      for(int i=0; i<n; i++) {
+         result.append(text);
+      }
+      return result.toString();
+   }
 }
