@@ -159,23 +159,47 @@ public class IndenteurPseudocode {
         long niveauIndentation = 0; // niveau d'indentation courante
         fin = codeTrimer.indexOf("\n", debut);
 
-        boolean finDeBlock = false;
-        boolean debutDeBlock = false;
+        // debutOuFin :
+        // si l'instruction précédente contenait une instruction de fin de block = -1
+        // si l'instruction précédente contenait une instruction de début de block = 1
+        // autrement = 0
+        int debutOuFin = 0;
+        boolean finDeBlock = false; // si l'instruction précédente contenait une instruction de fin de block
+        boolean debutDeBlock = false; // si l'instruction précédente contenait une instruction de fin de block
         while (fin != -1) {
             // extraire la ligne courante en indenter
             codeTmp = new StringBuilder(codeTrimer.substring(debut, fin));
-            if (codeTmp.toString().contains("//")) {
-                codeResult.append(Utils.repeatString(INDENTATION, niveauIndentation)).append(codeTmp);
+            if (codeTmp.toString().isEmpty()) {
+                // cas où on a affaire à une ligne vide
+                // on ajoute la ligne vide à notre résultat
+                codeResult.append("\n");
+            } else if (codeTmp.toString().substring(0, 3).contains("//")) {
+                // cas où on a affaire à un commentaire:
+                // les commentaires sont mis seul sur une ligne donc cette doit commencer avec '//'
+                // on indente et on ajoute le commentaire
+                // si l'instruction précédente était une instruction de début de block
+                // j'indente + 1
+                // sinon on reste au meme niveau d'indentation précédente
+                codeResult.append(debutOuFin == 1 ? getIndentation(niveauIndentation+1) : getIndentation(niveauIndentation));
+                codeResult.append(codeTmp);
             } else{
+                // autres cas : instructions
                 String s = codeTmp.substring(0, codeTmp.toString().contains(" ") ? codeTmp.indexOf(" ") : codeTmp.length());
                 String sLowerCase = s.toLowerCase(Locale.ROOT);
                 if (isMotsReserve(sLowerCase)) {
+                    // si le premier mot est un mot reserve du langage
                     String replacement = majuscule ? s.toUpperCase(Locale.ROOT) : s.toLowerCase(Locale.ROOT);
                     switch (sLowerCase) {
                         case "faire": {
-                            codeResult.append(debutDeBlock ? getIndentation(niveauIndentation+1) : getIndentation(niveauIndentation));
-                            if(debutDeBlock) niveauIndentation += 1;
-                            debutDeBlock = true;
+                            // si l'instruction précédente était une instruction de début de block
+                            // j'indente + 1
+                            // sinon on reste au meme niveau d'indentation précédente
+                            codeResult.append(debutOuFin == 1 ? getIndentation(niveauIndentation+1) : getIndentation(niveauIndentation));
+                            // 'faire' était une instruction de début de block
+                            // si l'instruction précédente était une instruction de début de block
+                            // l'indentation augmente
+                            if(debutOuFin == 1) niveauIndentation += 1;
+                            debutOuFin = 1;
 
                             codeResult.append(replacement)
                                     .append("\n");
@@ -184,14 +208,22 @@ public class IndenteurPseudocode {
                         case "ecrire":
                         case "lire":
                         case "saisir":{
-                            codeResult.append(debutDeBlock ? getIndentation(niveauIndentation+1) : getIndentation(niveauIndentation))
-                                    .append(codeTmp.toString().replaceFirst(s, replacement))
+                            // si l'instruction précédente était une instruction de début de block
+                            // alors on augmente l'indentation
+                            if(debutOuFin == 1) niveauIndentation += 1;
+                            debutOuFin = 0;
+                            codeResult.append(getIndentation(niveauIndentation));
+                            codeResult.append(codeTmp.toString().replaceFirst(s, replacement))
                                     .append("\n");
                         } break;
                         case "fin": {
-                            codeResult.append(finDeBlock ? getIndentation(niveauIndentation-1) : getIndentation(niveauIndentation));
-                            if(finDeBlock) niveauIndentation -= 1;
-                            finDeBlock = true;
+                            // si l'instruction précédente était une instruction de fin de block
+                            // alors on diminue l'indentation
+                            if(debutOuFin == -1) niveauIndentation -= 1;
+                            debutOuFin = -1;
+                            codeResult.append(getIndentation(niveauIndentation-1));
+
+                            // il n'existe que 2 types d'instruction ayant 'fin'
                             if(codeTmp.toString().toLowerCase(Locale.ROOT).contains("si")) {
                                 // case "Fin Si"
                                 codeResult.append(majuscule ? "FIN SI" : "fin si");
@@ -201,14 +233,19 @@ public class IndenteurPseudocode {
                             }
                         } break;
                         case "si": {
-                            codeResult.append(debutDeBlock ? getIndentation(niveauIndentation+1) : getIndentation(niveauIndentation));
-                            if(debutDeBlock) niveauIndentation += 1;
-                            debutDeBlock = true;
+                            // si l'instruction précédente était une instruction de début de block
+                            // alors on augmente l'indentation
+                            if(debutOuFin == 1) niveauIndentation += 1;
+                            debutOuFin = 1;
+                            codeResult.append(getIndentation(niveauIndentation));
+
                             codeResult.append(handlerSi(codeTmp, majuscule)).append("\n");
                         } break;
                         case "sinon": {
+                            // dans ce cas, l'instruction précédente est forcément une interne à un block
+                            // donc je recale en arrière
                             codeResult.append(getIndentation(niveauIndentation-1));
-                            debutDeBlock = true;
+                            debutOuFin = 1;
                             if (codeTmp.toString().toLowerCase(Locale.ROOT).equals("sinon")) {
                                 // cas "sinon" simple
                                 codeResult.append(majuscule ? "SINON" : "sinon").append("\n");
@@ -224,9 +261,11 @@ public class IndenteurPseudocode {
                             String codeTmpString = codeTmp.toString().toLowerCase(Locale.ROOT);
                             if (codeTmpString.substring(codeTmpString.length()-5).contains("faire")) {
                                 // cas "Tant que condition faire"
-                                codeResult.append(debutDeBlock ? getIndentation(niveauIndentation+1) : getIndentation(niveauIndentation));
-                                if(debutDeBlock) niveauIndentation += 1;
-                                debutDeBlock = true;
+                                // si l'instruction précédente était une instruction de début de block
+                                // alors on augmente l'indentation
+                                if(debutOuFin == 1) niveauIndentation += 1;
+                                debutOuFin = 1;
+                                codeResult.append(getIndentation(niveauIndentation));
 
                                 int index = codeTmpString.indexOf("que");
                                 int indexFaire = codeTmpString.lastIndexOf("faire");
@@ -237,10 +276,12 @@ public class IndenteurPseudocode {
 
                             } else {
                                 // cas "Tant que condition"
+                                // dans ce cas, on a affaire à une condition de fin de block
+                                // donc on retourne en arrière
+                                if(debutOuFin == -1) niveauIndentation -= 1;
+                                debutOuFin = -1;
+                                codeResult.append(getIndentation(niveauIndentation));
 
-                                codeResult.append(finDeBlock ? getIndentation(niveauIndentation-1) : getIndentation(niveauIndentation));
-                                if(finDeBlock) niveauIndentation -= 1;
-                                finDeBlock = true;
                                 int index = codeTmpString.indexOf("que");
                                 codeResult.append(majuscule ? "TANT QUE " : "tant que ")
                                         .append(codeTmp.toString().substring(index+3))
@@ -251,15 +292,8 @@ public class IndenteurPseudocode {
                             // TODO: à reféchir dessus
                         }
                     }
-                } else if(codeTmp.toString().isEmpty()) {
-                    codeResult.append("\n");
                 } else {
-                    // cas où la ligne représente une instruction
-                    codeResult.append(debutDeBlock ? getIndentation(niveauIndentation+1) : getIndentation(niveauIndentation))
-                            .append(codeTmp)
-                            .append("\n");
-                    debutDeBlock = false;
-                    finDeBlock = false;
+                    // TODO: à reféchir dessus
                 }
             }
 
