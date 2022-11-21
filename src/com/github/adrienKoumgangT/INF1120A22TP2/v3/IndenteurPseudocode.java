@@ -1,8 +1,11 @@
-package com.github.adrienKoumgangT.INF1120A22TP2.v2;
+package com.github.adrienKoumgangT.INF1120A22TP2.v3;
 
 import com.github.adrienKoumgangT.utils.Clavier;
-import com.github.adrienKoumgangT.utils.Utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -14,18 +17,18 @@ import java.util.*;
  *
  * INF1120 A22 TP2
  * @author Adrien Koumgang Tegantchouang
- * @version 2.0
+ * @version 3.0
  */
 public class IndenteurPseudocode {
 
     private final static String MSG_DEBUT = "Ce programme permet de corriger l'indentation d'un algorithme ecrit en pseudocode.\n";
     private final static String MSG_MENU = "----\n" +
-                                        "MENU\n" +
-                                        "----\n" +
-                                        "1. Indenter pseudocode\n" +
-                                        "2. Quitter\n" +
-                                        "\n" +
-                                        "Entrez votre choix : ";
+            "MENU\n" +
+            "----\n" +
+            "1. Indenter pseudocode\n" +
+            "2. Quitter\n" +
+            "\n" +
+            "Entrez votre choix : ";
     private final static String MSG_ERREUR_CHOIX_MENU = "ERREUR ! Choix invalide. Recommencez...\n";
     private final static String MSG_MENU_FICHIER = "Entrez le chemin du fichier de pseudocode : ";
     private final static String MSG_ERREUR_CHOIX_FICHIER = "ERREUR ! Chemin de fichier invalide. Recommencez...\n";
@@ -116,7 +119,7 @@ public class IndenteurPseudocode {
         do {
             System.out.println(MSG_MENU_FICHIER);
             choix = Clavier.lireString();
-            contenuFic = Utils.lireFichierTexte(choix);
+            contenuFic = lireFichierTexte(choix);
             if (contenuFic == null) {
                 System.out.println();
                 System.out.println(MSG_ERREUR_CHOIX_FICHIER);
@@ -149,7 +152,7 @@ public class IndenteurPseudocode {
     public static String indenterPseudocode(String code, Boolean majuscule) {
         if(code == null) return null;
         if(majuscule == null) majuscule = true;
-        String codeTrimer = Utils.trimer(code);
+        String codeTrimer = trimer(code);
 
         System.out.println("code trimer : \n" + codeTrimer);
 
@@ -197,10 +200,10 @@ public class IndenteurPseudocode {
                 if(indexOfSpace == indexOfTab) {
                     indexBlanc = codeTmp.length();
                 } else if ((indexOfSpace > 0 && indexOfTab == -1)
-                            || (indexOfSpace > 0 && indexOfSpace < indexOfTab)) {
+                        || (indexOfSpace > 0 && indexOfSpace < indexOfTab)) {
                     indexBlanc = indexOfSpace;
                 } else if ((indexOfTab > 0 && indexOfSpace == -1)
-                            || (indexOfTab > 0 && indexOfTab < indexOfSpace)) {
+                        || (indexOfTab > 0 && indexOfTab < indexOfSpace)) {
                     indexBlanc = indexOfTab;
                 } else {
                     indexBlanc = codeTmp.length();
@@ -354,5 +357,78 @@ public class IndenteurPseudocode {
             result.append(INDENTATION);
         }
         return result.toString();
+    }
+
+
+
+
+    // utilitaire
+
+    /**
+     * Lit le fichier texte donne par cheminFic, et retourne son contenu sous
+     * la forme d'une chaine de caracteres. Si le fichier donne par cheminFic
+     * n'existe pas ou ne peut pas etre lu, la methode retourne null.
+     *
+     * @param cheminFic le chemin du fichier texte a lire.
+     * @return le contenu du fichier texte donne par cheminFic ou null si ce
+     *         fichier ne peut pas etre lu.
+     */
+    public static String lireFichierTexte (String cheminFic) {
+        File fic = new File(cheminFic);
+        StringBuilder texte = null;
+        BufferedReader in;
+
+        if (fic.exists() && fic.isFile() && fic.canRead()) {
+            try {
+                texte = new StringBuilder();
+                in = new BufferedReader(new FileReader(fic));
+
+                while (in.ready()) {
+                    texte.append(in.readLine()).append("\n");
+                }
+            } catch (IOException e) {
+                System.err.println("ERREUR INATTENDUE, NE DEVRAIT PAS SE PRODUIRE");
+            }
+        }
+
+        return texte != null ? texte.toString() : null;
+    }
+
+
+    /**
+     * Cette methode retourne une nouvelle chaine de caracteres qui represente
+     * le texte donne en parametre, auquel on a enleve tous les caracteres
+     * blancs au debut de chaque ligne, et tous les caracteres blancs superflus
+     * a la fin de chaque ligne (en conservant cependant le caractere '\n' qui
+     * marque la fin d'une ligne).
+     *
+     * @param texte le texte a traiter.
+     * @return une nouvelle chaine representant le texte donne en parametre,
+     * auquel on a enleve tous les caracteres blancs au debut et a la fin
+     * de chaque ligne (en conservant le caractere '\n' a la fin de chaque
+     * ligne).
+     */
+    public static String trimer (String texte) {
+        StringBuilder sTrim = new StringBuilder(); //texte a retourner
+        String sTmp;
+        int debut = 0; //indice du debut de la ligne courante
+        int fin; //indice de la fin de la ligne courante
+        //parcourir les lignes, et enlever les caracteres blancs avant et après
+        //chaque ligne sauf le \n a la fin de la ligne.
+        texte = texte.trim() + "\n";
+        fin = texte.indexOf("\n", debut);
+        while (fin != -1) {
+            //extraire la ligne courante et enlever tous les caracteres blancs
+            //en debut et fin de ligne
+            sTmp = texte.substring(debut, fin).trim();
+            //concatener la ligne courante a la chaine a retourner, en ajoutant
+            //le saut de ligne a la fin.
+            sTrim.append(sTmp).append("\n");
+            //ajuster le debut de la ligne courante suivante
+            debut = fin + 1;
+            //trouver la fin de la ligne courante suivante
+            fin = texte.indexOf("\n", debut);
+        }
+        return sTrim.toString();
     }
 }
