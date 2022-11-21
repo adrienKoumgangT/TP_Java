@@ -1,0 +1,38 @@
+DEBUT
+	Afficher "Saisir age : "				
+		LIRE age
+	
+//Selection simple Si
+		      	Si age > 5 alors
+		     age <- age + 1
+Fin SI
+	
+//Selection Si Sinon   
+	Si		age > 10 alors  
+		age <- age - 4    
+	            Sinon     
+ age <- age - 3   
+	ECRIRE age   		
+Fin si
+	
+	//Selection multiple Si Sinon si Sinon
+                Si age > 12 alors
+ 
+//selection interne
+		     	Si age = 14 ALORS
+			        Afficher "WOW"
+		                 	 SiNon  		
+			Afficher "OK"   	
+FIN   si
+	
+	    Sinon   si age = 15   alors 
+EcriRE "BROUM"
+            	Sinon si age = 16		Alors
+		        Afficher "Si"
+	Sinon        
+		ECRIRE "Fin"   
+					Fin si
+	
+           Fin
+           
+   

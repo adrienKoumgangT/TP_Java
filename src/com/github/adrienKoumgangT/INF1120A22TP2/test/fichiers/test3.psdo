@@ -1,0 +1,44 @@
+	
+
+    			
+                        DEBUT
+                  //initialisation des constantes
+        	MSG_SOL_NBR_SEC <- "Veuillez entrer un nombre de secondes : "    
+	   MSG_ERR_NBR_SEC <- "Erreur. Le nombre de secondes doit etre positif (>= 0)."
+MSG_FIN <- "Fin normale du programme."
+  NBR_SEC_MIN <- 0 
+	          NBR_SEC_DANS_MIN <- 60 
+	                       NBR_MIN_DANS_HR <- 60 
+NBR_HRS_DANS_JOUR <- 24
+          
+                 	AFFicher MSG_SOL_NBR_SEC 
+      SaiSir nbSecondesSaisies
+      
+	//Tant QUE l'utilisateur ne quitte pas en entrant 0   
+	                   tant QUE nbSecondesSaisies /= NBR_SEC_MIN   faire   
+	                   
+	   								//Nombre de secondes invalide (< 0)			
+Si nbSecondesSaisies < NBR_SEC_MIN   ALOrs   		
+             			afficher MSG_ERR_NBR_SEC			
+			
+		SInon				
+							nbMinutes <- nbSecondesSaisies / NBR_SEC_DANS_MIN 
+	nbSecondes <- nbSecondesSaisies mod NBR_SEC_DANS_MIN 
+			nbHeures <- nbMinutes / NBR_MIN_DANS_HR
+		nbMinutes <- nbMinutes mod NBR_MIN_DANS_HR
+     			nbJours <- nbHeures / NBR_HRS_DANS_JOUR 
+nbHeures <- nbHeures mod 	NBR_HRS_DANS_JOUR
+		
+afficher nbJours + " jr, " + nbHeures + " hr, " +  nbMinutes + " mn, " +  nbSecondes + " s"
+Fin si
+
+//redemander un nombre de secondes a transformer
+AFFICHER MSG_SOL_NBR_SEC 
+   Saisir nbSecondesSaisies
+		
+					     fin TAnt que
+	
+	        ecrire MSG_FIN
+           fin
+						   
+				

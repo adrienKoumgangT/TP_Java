@@ -81,12 +81,12 @@ public class IndenteurPseudocode {
                 choix = validationChoixIndentation();
 
                 // indention du pseudocode
-                indenterPseudocode(contenuFic, choix);
+                String result = indenterPseudocode(contenuFic, choix);
 
                 // affiche du résultat
                 System.out.println();
                 System.out.println(LIGNE_TIRETS);
-                System.out.println(contenuFic);
+                System.out.println(result);
                 System.out.println(LIGNE_TIRETS);
                 System.out.println();
                 System.out.println(MSG_ENTREE_CONTINUER);
@@ -307,7 +307,7 @@ public class IndenteurPseudocode {
                                 // cas "Tant que condition"
                                 // dans ce cas, on a affaire à une condition de fin de block
                                 // donc on retourne en arrière
-                                if(debutOuFin == -1) niveauIndentation -= 1;
+                                niveauIndentation -= 1;
                                 debutOuFin = -1;
                                 codeResult.append(getIndentation(niveauIndentation));
 

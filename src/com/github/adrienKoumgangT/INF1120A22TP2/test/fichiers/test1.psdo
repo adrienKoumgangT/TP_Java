@@ -1,0 +1,39 @@
+  debut
+		//LIre le nom 
+  Ecrire "Entrez votre nom : "  				
+		   Lire nom   
+		
+		//SaiSir l'age
+		AFFICHER "Entrez votre age : "	 			
+			   			           Saisir age   
+		
+		cpt <- 0
+		
+  SI age < 100   alors
+		   
+//compter le nombre d'annees requises pour atteindre 100
+		                        Faire         				
+				cpt <- cpt + 1
+                  tant QUE      cpt + age < 100	  		
+			
+					       fin si
+		
+	ECRIRE nom + ", il vous manque " + cpt + " annees avant d'avoir 100 ans !"
+	
+	
+ TANTQUE <- 3    
+         ECRIRE "SAISIR un mot : "
+	LIRE mot
+	
+								SI mot = "FiN" ALORS     
+  afficher mot
+                   SINON si mot = "pieuvre" alors 	
+		   afficher "TANT que tante"
+sinon si mot = "loup" alors		
+                   mot <- mot + "-garoup"
+		     AFFICHER mot
+			    					SINON  
+        		afficher "ERREUR" + TANTQUE	
+FIN si	
+	
+       FIN
