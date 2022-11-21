@@ -164,8 +164,6 @@ public class IndenteurPseudocode {
         // si l'instruction précédente contenait une instruction de début de block = 1
         // autrement = 0
         int debutOuFin = 0;
-        boolean finDeBlock = false; // si l'instruction précédente contenait une instruction de fin de block
-        boolean debutDeBlock = false; // si l'instruction précédente contenait une instruction de fin de block
         while (fin != -1) {
             // extraire la ligne courante en indenter
             codeTmp = new StringBuilder(codeTrimer.substring(debut, fin));
@@ -180,8 +178,11 @@ public class IndenteurPseudocode {
                 // si l'instruction précédente était une instruction de début de block
                 // j'indente + 1
                 // sinon on reste au meme niveau d'indentation précédente
-                codeResult.append(debutOuFin == 1 ? getIndentation(niveauIndentation+1) : getIndentation(niveauIndentation));
-                codeResult.append(codeTmp);
+                if(debutOuFin == 1) niveauIndentation += 1;
+                debutOuFin = 0;
+                codeResult.append(getIndentation(niveauIndentation));
+                codeResult.append(codeTmp)
+                        .append("\n");
             } else{
                 // autres cas : instructions
                 String s = codeTmp.substring(0, codeTmp.toString().contains(" ") ? codeTmp.indexOf(" ") : codeTmp.length());
@@ -190,16 +191,14 @@ public class IndenteurPseudocode {
                     // si le premier mot est un mot reserve du langage
                     String replacement = majuscule ? s.toUpperCase(Locale.ROOT) : s.toLowerCase(Locale.ROOT);
                     switch (sLowerCase) {
-                        case "faire": {
-                            // si l'instruction précédente était une instruction de début de block
-                            // j'indente + 1
-                            // sinon on reste au meme niveau d'indentation précédente
-                            codeResult.append(debutOuFin == 1 ? getIndentation(niveauIndentation+1) : getIndentation(niveauIndentation));
-                            // 'faire' était une instruction de début de block
+                        case "faire":
+                        case "debut": {
+                            // 'faire' et 'debut' sont des instructions de début de block
                             // si l'instruction précédente était une instruction de début de block
                             // l'indentation augmente
                             if(debutOuFin == 1) niveauIndentation += 1;
                             debutOuFin = 1;
+                            codeResult.append(getIndentation(niveauIndentation));
 
                             codeResult.append(replacement)
                                     .append("\n");
@@ -223,8 +222,11 @@ public class IndenteurPseudocode {
                             debutOuFin = -1;
                             codeResult.append(getIndentation(niveauIndentation-1));
 
-                            // il n'existe que 2 types d'instruction ayant 'fin'
-                            if(codeTmp.toString().toLowerCase(Locale.ROOT).contains("si")) {
+                            // il n'existe que 3 types d'instruction ayant 'fin'
+                            if (codeTmp.toString().substring(3).isEmpty()) {
+                                // case "Fin"
+                                codeResult.append(majuscule ? "FIN" : "fin");
+                            } else if (codeTmp.toString().toLowerCase(Locale.ROOT).contains("si")) {
                                 // case "Fin Si"
                                 codeResult.append(majuscule ? "FIN SI" : "fin si");
                             } else {
@@ -239,21 +241,22 @@ public class IndenteurPseudocode {
                             debutOuFin = 1;
                             codeResult.append(getIndentation(niveauIndentation));
 
-                            codeResult.append(handlerSi(codeTmp, majuscule)).append("\n");
+                            codeResult.append(handlerSi(codeTmp, majuscule, s)).append("\n");
                         } break;
                         case "sinon": {
                             // dans ce cas, l'instruction précédente est forcément une interne à un block
                             // donc je recale en arrière
-                            codeResult.append(getIndentation(niveauIndentation-1));
+                            niveauIndentation -= 1;
+                            codeResult.append(getIndentation(niveauIndentation));
                             debutOuFin = 1;
                             if (codeTmp.toString().toLowerCase(Locale.ROOT).equals("sinon")) {
                                 // cas "sinon" simple
                                 codeResult.append(majuscule ? "SINON" : "sinon").append("\n");
                             } else {
                                 // cas "sinon" complexe = "sinon si"
-                                int index = codeTmp.toString().toLowerCase(Locale.ROOT).indexOf("si");
+                                int index = codeTmp.toString().toLowerCase(Locale.ROOT).indexOf("si", 3);
                                 codeResult.append(majuscule ? "SINON " : "sinon ")
-                                        .append(handlerSi(new StringBuilder(codeTmp.toString().substring(index)), majuscule))
+                                        .append(handlerSi(new StringBuilder(codeTmp.toString().substring(index)), majuscule, codeTmp.substring(index, index+2)))
                                         .append("\n");
                             }
                         } break;
@@ -304,9 +307,9 @@ public class IndenteurPseudocode {
         return codeResult.toString();
     }
 
-    public static StringBuilder handlerSi(StringBuilder codeTmp, Boolean majuscule) {
+    public static StringBuilder handlerSi(StringBuilder codeTmp, Boolean majuscule, String s) {
         int index = codeTmp.toString().toLowerCase(Locale.ROOT).lastIndexOf("alors");
-        codeTmp = new StringBuilder(codeTmp.toString().replaceFirst("si", majuscule ? "SI" : "si"));
+        codeTmp = new StringBuilder(codeTmp.toString().replaceFirst(s, majuscule ? "SI" : "si"));
         codeTmp.replace(index, index + 5, majuscule ? "ALORS" : "alors");
         return codeTmp;
     }
