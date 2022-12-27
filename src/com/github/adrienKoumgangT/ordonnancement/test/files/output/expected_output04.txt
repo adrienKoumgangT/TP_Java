@@ -1,0 +1,34 @@
+Si vous voulez lire un graphe Appuyez sur entrer 'oui' sinon entrez 'non' et le programme s'arretera oui
+veuillez entrer le numéro de graphe Sinon veuillez ajouter le fichier:4
+le nombre de sommets est :
+11
+le graphe est:
+0--> 1 = 0
+0--> 2 = 0
+1--> 4 = 3
+2--> 3 = 2
+3--> 10 = 3
+4--> 5 = 5
+4--> 7 = 5
+4--> 9 = 5
+5--> 6 = 4
+5--> 8 = 4
+6--> 11 = 2
+7--> 8 = 2
+8--> 11 = 4
+9--> 10 = 5
+la matrice est:
+ *  0  0  *  *  *  *  *  *  *  *  * 
+ *  *  *  *  3  *  *  *  *  *  *  * 
+ *  *  *  2  *  *  *  *  *  *  *  * 
+ *  *  *  *  *  *  *  *  *  *  3  * 
+ *  *  *  *  *  5  *  5  *  5  *  * 
+ *  *  *  *  *  *  4  *  4  *  *  * 
+ *  *  *  *  *  *  *  *  *  *  *  2
+ *  *  *  *  *  *  *  *  2  *  *  * 
+ *  *  *  *  *  *  *  *  *  *  *  4
+ *  *  *  *  *  *  *  *  *  *  5  * 
+ *  *  *  *  *  *  *  *  *  *  *  * 
+ *  *  *  *  *  *  *  *  *  *  *  * 
+Il n'y a pas de circuit
+Il n'y a pas d'arcs negatif

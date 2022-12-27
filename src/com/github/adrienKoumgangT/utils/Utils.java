@@ -85,19 +85,16 @@ public class Utils {
       return entier;
    }
 
-
-
-
-
-
    /**
     * Lit le fichier texte donne par cheminFic, et retourne son contenu sous 
     * la forme d'une chaine de caracteres. Si le fichier donne par cheminFic
     * n'existe pas ou ne peut pas etre lu, la methode retourne null.
     * 
-    * @param cheminFic le chemin du fichier texte a lire.
-    * @return le contenu du fichier texte donne par cheminFic ou null si ce 
-    *         fichier ne peut pas etre lu.
+    * @param cheminFic le chemin du fichier texte à lire.
+    * @return <ul>
+    *     <li>le contenu du fichier texte donne par cheminFic;</li>
+    *     <li>null si ce fichier ne peut pas etre lu.</li>
+    * </ul>
     */
    public static String lireFichierTexte (String cheminFic) {
       File fic = new File(cheminFic);
@@ -159,6 +156,18 @@ public class Utils {
    }
 
 
+   /**
+    * Fonction qui me permet de dupliquer une chaine de caractère
+    * un nombre de fois n.
+    *
+    * @param text le texte à dupliquer
+    * @param n le nombre de fois à dupliquer le texte
+    * @return <ul>
+    *     <li>null : si le texte est null;</li>
+    *     <li>texte identique : si le nombre de fois à dupliquer est plus petit ou égal à 1; </li>
+    *     <li>texte dupliqué n fois : si n est strictement supérieur à 1.</li>
+    * </ul>
+    */
    public static String repeatString(String text, long n) {
       if (text == null) return null;
       if (n <= 1) return text;
@@ -167,5 +176,21 @@ public class Utils {
          result.append(text);
       }
       return result.toString();
+   }
+
+   /**
+    * Fonction qui me permet de valider si un chemin d'accès
+    * à un fichier est valide ou non.
+    *
+    * @param pathFile le chemin d'accès du fichier
+    * @return <ul>
+    *     <li>true : si le fichier existe</li>
+    *     <li>false : si le fichier n'existe pas ou le chemin donner ne porte pas au fichier</li>
+    * </ul>
+    */
+   public static Boolean isGoodPathFile(String pathFile) {
+      return pathFile != null
+              && !pathFile.isEmpty()
+              && (new File(pathFile)).exists();
    }
 }

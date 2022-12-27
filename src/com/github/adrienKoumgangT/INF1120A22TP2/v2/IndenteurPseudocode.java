@@ -8,10 +8,10 @@ import java.util.*;
 /**
  * Programme permettant de corriger l'indentation d'un algorithme
  * écrit en pseudocode se trouvant dans un fichier texte.
- *
+ * <p>
  * De plus, le programme permet de formater, soit en majuscules,
  * soit en minuscules, tous les mots réservés du langage pseudocode.
- *
+ * <p>
  * INF1120 A22 TP2
  * @author Adrien Koumgang Tegantchouang
  * @version 2.0
